@@ -17,12 +17,7 @@ public class UserRepository(AppDbContext _context) : IUserRepository
 
     public async Task<User> GetUserByEmail(string email)
     {
-        var user = await _context.Users.Include(_ => _.Confirmer).FirstOrDefaultAsync(x => x.Confirmer.Gmail == email);
-        if (user is null)
-        {
-            throw new EntityNotFoundException();
-        }
-        return user;
+        return await _context.Users.Include(_ => _.Confirmer).FirstOrDefaultAsync(x => x.Confirmer.Gmail == email);
     }
 
     public Task<bool> CheckUserById(long userId) => _context.Users.AnyAsync(x => x.UserId == userId);
