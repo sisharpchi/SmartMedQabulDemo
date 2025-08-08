@@ -10,7 +10,6 @@ public class Appointment
     public string? Reason { get; set; }
     public string? Location { get; set; }
 
-
     public long PatientId { get; set; }
     public Patient Patient { get; set; }
 
