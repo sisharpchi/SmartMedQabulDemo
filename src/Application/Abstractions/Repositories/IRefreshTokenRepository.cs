@@ -1,5 +1,10 @@
-﻿namespace Application.Abstractions.Repositories;
+﻿using Domain.Entities;
 
-internal interface IRefreshTokenRepository
+namespace Application.Abstractions.Repositories;
+
+public interface IRefreshTokenRepository
 {
+    Task AddRefreshToken(RefreshToken refreshToken);
+    Task<RefreshToken> SelectRefreshToken(string refreshToken, long userId);
+    Task DeleteRefreshToken(string refreshToken);
 }

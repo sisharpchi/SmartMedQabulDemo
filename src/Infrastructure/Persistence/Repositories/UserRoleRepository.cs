@@ -1,4 +1,6 @@
-﻿using Domain.Entities;
+﻿using Application.Abstractions.Repositories;
+using Core.Errors;
+using Domain.Entities;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 

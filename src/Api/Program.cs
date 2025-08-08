@@ -1,4 +1,8 @@
 
+using Api.Configurations;
+using Api.Endpoints;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Api
 {
     public class Program
@@ -14,6 +18,28 @@ namespace Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.ConfigureDataBase();
+            builder.ConfigurationJwtAuth();
+            builder.ConfigureJwtSettings();
+            builder.ConfigureSerilog();
+            builder.Services.ConfigureDependecies();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalhost5173", policy =>
+                {
+                    policy.WithOrigins(
+                        "http://localhost:4200",
+                        "http://localhost:5173"
+                    )
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
+
+
+            //ServiceCollectionExtensions.AddSwaggerWithJwt(builder.Services);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -23,10 +49,17 @@ namespace Api
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowLocalhost5173");
+            app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapAuthEndpoints();
+            app.MapRoleEndpoints();
+            app.MapAdminEndpoints();
 
             app.MapControllers();
 
