@@ -31,19 +31,10 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
             throw new AuthException(errorMessages);
         }
 
-        User isEmailExists;
-        try
-        {
-            isEmailExists = await _userRepo.GetUserByEmail(userCreateDto.Email);
-        }
-        catch (Exception ex)
-        {
-            isEmailExists = null;
-        }
+        var isEmailExists = await _userRepo.GetUserByEmail(userCreateDto.Email);
 
         if (isEmailExists == null)
         {
-
             var tupleFromHasher = PasswordHasher.Hasher(userCreateDto.Password);
 
             var confirmer = new UserConfirmer()
@@ -51,8 +42,6 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
                 IsConfirmed = false,
                 Gmail = userCreateDto.Email,
             };
-
-
             var user = new User()
             {
                 Confirmer = confirmer,
@@ -62,12 +51,32 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
                 PhoneNumber = userCreateDto.PhoneNumber,
                 Password = tupleFromHasher.Hash,
                 Salt = tupleFromHasher.Salt,
-                RoleId = await _roleRepo.GetRoleIdAsync("User")
             };
+
+            if(userCreateDto.RoleName == "Doctor")
+            {
+                user.RoleId = await _roleRepo.GetRoleIdAsync("Doctor");
+            }
+            else
+            {
+                user.RoleId = await _roleRepo.GetRoleIdAsync("User");
+            }
+
 
             long userId = await _userRepo.AddUserAync(user);
 
             var foundUser = await _userRepo.GetUserByIdAync(userId);
+
+            if(userCreateDto.RoleName == "Doctor")
+            {
+                var doctor = new Doctor()
+                {
+                    UserId = userId,
+                };
+
+                foundUser.RoleId = await _roleRepo.GetRoleIdAsync("Doctor");
+            }
+
 
             foundUser.Confirmer!.UserId = userId;
 
@@ -89,11 +98,15 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
             isEmailExists.RoleId = await _roleRepo.GetRoleIdAsync("User");
 
             await _userRepo.UpdateUser(isEmailExists);
+
+
+
             return isEmailExists.UserId;
         }
-
         throw new NotAllowedException("This email already confirmed");
     }
+
+
 
 
     public async Task<LoginResponseDto> LoginUserAsync(UserLoginDto userLoginDto)
