@@ -75,8 +75,6 @@ public static class AuthEndpoints
         })
         .WithName("RefreshToken");
 
-        app.MapGet("/api/test-anon", () => "ok").AllowAnonymous();
-
         userGroup.MapDelete("/log-out",
         async (string refreshToken, IAuthService _service) =>
         {

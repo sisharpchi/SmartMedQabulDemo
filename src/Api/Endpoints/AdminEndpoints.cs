@@ -12,17 +12,10 @@ public static class AdminEndpoints
         var userGroup = app.MapGroup("/api/admin")
                    .WithTags("AdminManagement");
 
-        userGroup.MapGet("/get-all-users-by-role", [Authorize(Roles = "Admin, SuperAdmin")]
-        [ResponseCache(Duration = 5, Location = ResponseCacheLocation.Any, NoStore = false)]
-        async (string role, IRoleService _roleService) =>
-        {
-            var users = await _roleService.GetAllUsersByRoleAsync(role);
-            return Results.Ok(new { success = true, data = users });
-        })
-            .WithName("GetAllUsersByRole");
+        
 
 
-        userGroup.MapDelete("/delete-user-by-id", [Authorize(Roles = "Admin, SuperAdmin")]
+        userGroup.MapDelete("/delete{userId}", [Authorize(Roles = "Admin, SuperAdmin")]
         async (long userId, HttpContext httpContext, IUserService userService) =>
         {
             var role = httpContext.User.FindFirst(ClaimTypes.Role)?.Value;

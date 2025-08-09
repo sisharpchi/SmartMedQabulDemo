@@ -20,6 +20,11 @@ public class User
     public long RoleId { get; set; }
     public UserRole Role { get; set; }
 
+    public long? PatientId { get; set; }
+    public Patient? Patient { get; set; }
+    public long? DoctorId { get; set; }
+    public Doctor? Doctor { get; set; }
+
     public long? ConfirmerId { get; set; }
     public UserConfirmer? Confirmer { get; set; }
 
