@@ -10,5 +10,5 @@ public interface IDoctorRepository
     Task UpdateDoctorAsync(Doctor doctor);
     Task DeleteDoctorAsync(long id);
 
-    Task<Doctor> GetAllDoctorsByHospitalIdAsync(long hospitalId);
+    Task<ICollection<Doctor>> GetAllDoctorsByHospitalIdAsync(long hospitalId);
 }

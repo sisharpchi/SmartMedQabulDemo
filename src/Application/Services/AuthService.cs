@@ -15,7 +15,7 @@ using System.Security.Claims;
 
 namespace Application.Services;
 
-public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _validator,
+public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doctorRepo,IRoleRepository _roleRepo, IValidator<UserCreateDto> _validator,
     IUserRepository _userRepo, ITokenService _tokenService,
     JwtAppSettings _jwtSetting, IValidator<UserLoginDto> _validatorForLogin,
     IRefreshTokenRepository _refTokRepo) : IAuthService
@@ -29,6 +29,17 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
         {
             string errorMessages = string.Join("; ", validatorResult.Errors.Select(e => e.ErrorMessage));
             throw new AuthException(errorMessages);
+        }
+
+        var roleId = 0l;
+
+        if (userCreateDto.RoleName == "Doctor")
+        {
+            roleId = await _roleRepo.GetRoleIdAsync("Doctor");
+        }
+        else
+        {
+            roleId = await _roleRepo.GetRoleIdAsync("User");
         }
 
         var isEmailExists = await _userRepo.GetUserByEmail(userCreateDto.Email);
@@ -53,14 +64,7 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
                 Salt = tupleFromHasher.Salt,
             };
 
-            if(userCreateDto.RoleName == "Doctor")
-            {
-                user.RoleId = await _roleRepo.GetRoleIdAsync("Doctor");
-            }
-            else
-            {
-                user.RoleId = await _roleRepo.GetRoleIdAsync("User");
-            }
+            
 
 
             long userId = await _userRepo.AddUserAync(user);
@@ -72,13 +76,20 @@ public class AuthService(IRoleRepository _roleRepo, IValidator<UserCreateDto> _v
                 var doctor = new Doctor()
                 {
                     UserId = userId,
+                    IsConfirmedByAdmin = false,
                 };
-
-                foundUser.RoleId = await _roleRepo.GetRoleIdAsync("Doctor");
+                await _doctorRepo.AddDoctorAsync(doctor);
+            }
+            else
+            {
+                var patient = new Patient()
+                {
+                    UserId = userId
+                };
             }
 
 
-            foundUser.Confirmer!.UserId = userId;
+                foundUser.Confirmer!.UserId = userId;
 
             await _userRepo.UpdateUser(foundUser);
 
