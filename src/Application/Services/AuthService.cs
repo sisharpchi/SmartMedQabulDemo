@@ -62,10 +62,8 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
                 PhoneNumber = userCreateDto.PhoneNumber,
                 Password = tupleFromHasher.Hash,
                 Salt = tupleFromHasher.Salt,
+                RoleId = roleId,
             };
-
-            
-
 
             long userId = await _userRepo.AddUserAync(user);
 
@@ -86,6 +84,7 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
                 {
                     UserId = userId
                 };
+                await _patientRepo.AddPatientAsync(patient);
             }
 
 
@@ -106,12 +105,26 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
             isEmailExists.PhoneNumber = userCreateDto.PhoneNumber;
             isEmailExists.Password = tupleFromHasher.Hash;
             isEmailExists.Salt = tupleFromHasher.Salt;
-            isEmailExists.RoleId = await _roleRepo.GetRoleIdAsync("User");
+            isEmailExists.RoleId = roleId;
 
+            if (userCreateDto.RoleName == "Doctor")
+            {
+                var doctor = new Doctor()
+                {
+                    UserId = isEmailExists.UserId,
+                    IsConfirmedByAdmin = false,
+                };
+                await _doctorRepo.AddDoctorAsync(doctor);
+            }
+            else
+            {
+                var patient = new Patient()
+                {
+                    UserId = isEmailExists.UserId
+                };
+                await _patientRepo.AddPatientAsync(patient);
+            }
             await _userRepo.UpdateUser(isEmailExists);
-
-
-
             return isEmailExists.UserId;
         }
         throw new NotAllowedException("This email already confirmed");
@@ -137,7 +150,11 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
         {
             throw new UnauthorizedException("UserName or password incorrect");
         }
-        if (user.Confirmer.IsConfirmed == false)
+        else if (user.Doctor is not null && user.Doctor.IsConfirmedByAdmin is false)
+        {
+            throw new NotAllowedException("You are not confirmed by admin as a doctor");
+        }
+        if (user.Confirmer!.IsConfirmed == false)
         {
             throw new UnauthorizedException("Email not confirmed");
         }

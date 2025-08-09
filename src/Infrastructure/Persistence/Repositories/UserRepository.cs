@@ -55,7 +55,7 @@ public class UserRepository(AppDbContext _context) : IUserRepository
 
     public async Task<User> GetUserByUserNameAync(string userName)
     {
-        var user = await _context.Users.Include(_ => _.Confirmer).Include(_ => _.Role).FirstOrDefaultAsync(x => x.UserName == userName);
+        var user = await _context.Users.Include(x=>x.Doctor).Include(_ => _.Confirmer).Include(_ => _.Role).FirstOrDefaultAsync(x => x.UserName == userName);
         if (user == null)
         {
             throw new EntityNotFoundException($"Entity with {userName} not found");
