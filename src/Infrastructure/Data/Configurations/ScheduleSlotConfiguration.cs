@@ -17,7 +17,7 @@ public class ScheduleSlotConfiguration : IEntityTypeConfiguration<ScheduleSlot>
         builder.HasOne(s => s.Doctor)
                .WithMany()
                .HasForeignKey(s => s.DoctorId)
-               .OnDelete(DeleteBehavior.Cascade);
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(s => s.Appointment)
                .WithMany()

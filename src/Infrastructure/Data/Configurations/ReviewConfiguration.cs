@@ -17,12 +17,12 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
         builder.HasOne(r => r.Doctor)
                .WithMany()
                .HasForeignKey(r => r.DoctorId)
-               .OnDelete(DeleteBehavior.Cascade);
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(r => r.Patient)
                .WithMany()
                .HasForeignKey(r => r.PatientId)
-               .OnDelete(DeleteBehavior.Cascade);
+               .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(r => r.Appointment)
                .WithMany()
