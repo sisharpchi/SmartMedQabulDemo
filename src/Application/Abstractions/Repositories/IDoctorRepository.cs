@@ -9,6 +9,7 @@ public interface IDoctorRepository
     Task<ICollection<Doctor>> GetAllDoctorsAsync();
     Task<ICollection<Doctor>> GetAllUnConfirmedDoctorsAsync();
     Task UpdateDoctorAsync(Doctor doctor);
+    Task ConfirmDoctorAsync(long doctorId,long hospitalId);
     Task DeleteDoctorAsync(long id);
 
     Task<ICollection<Doctor>> GetAllDoctorsByHospitalIdAsync(long hospitalId);

@@ -15,6 +15,19 @@ public class DoctorRepository(AppDbContext _context) : IDoctorRepository
         return doctor.Id;
     }
 
+    public async Task ConfirmDoctorAsync(long doctorId, long hospitalId)
+    {
+        var hospitalExists = await _context.Hospitals.AnyAsync(x=>x.Id == hospitalId);
+        if (!hospitalExists)
+        {
+            throw new EntityNotFoundException($"Hospital not found with id {hospitalId}");
+        }
+        var doctor = await GetDoctorByIdAsync(doctorId);
+        doctor.HospitalId = hospitalId;
+        doctor.IsConfirmedByAdmin = true;
+        await _context.SaveChangesAsync();
+    }
+
     public async Task DeleteDoctorAsync(long id)
     {
         var doctor = await GetDoctorByIdAsync(id);
