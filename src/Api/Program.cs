@@ -1,7 +1,7 @@
 
 using Api.Configurations;
 using Api.Endpoints;
-using Microsoft.Extensions.DependencyInjection;
+using Api.Extensions;
 
 namespace Api
 {
@@ -10,7 +10,7 @@ namespace Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            ServiceCollectionExtensionsSwagger.AddSwaggerWithJwt(builder.Services);
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -60,6 +60,7 @@ namespace Api
             app.MapAuthEndpoints();
             app.MapRoleEndpoints();
             app.MapAdminEndpoints();
+            app.MapHospitalEndpoints();
 
             app.MapControllers();
 

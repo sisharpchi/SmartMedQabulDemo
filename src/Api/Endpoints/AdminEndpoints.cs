@@ -13,14 +13,14 @@ public static class AdminEndpoints
         var userGroup = app.MapGroup("/api/admin")
                    .WithTags("AdminManagement");
 
-        userGroup.MapPost("/add-hospital",
+        userGroup.MapPost("/add-hospital", [Authorize(Roles = "Admin, SuperAdmin")]
         async (HospitalCreateDto hospital,IHospitalService hospitalService) =>
         {
             return Results.Ok(await hospitalService.AddHospitalAsync(hospital));
         })
         .WithName("AddHospital");
 
-        userGroup.MapPost("/confirm-doctor",
+        userGroup.MapPost("/confirm-doctor", [Authorize(Roles = "Admin, SuperAdmin")]
         async (long doctorId,long hospitalId,IDoctorService doctorService) =>
         {
             await doctorService.ConfirmDoctorAsync(doctorId,hospitalId);
