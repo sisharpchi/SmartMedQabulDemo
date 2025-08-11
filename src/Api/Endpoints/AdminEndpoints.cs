@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions.Services;
+using Application.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,10 +13,17 @@ public static class AdminEndpoints
         var userGroup = app.MapGroup("/api/admin")
                    .WithTags("AdminManagement");
 
+        userGroup.MapPost("/add-Hospital",
+        async (HospitalCreateDto hospital,HttpContext httpContext, IHospitalService hospitalService) =>
+        {
+            return Results.Ok(await hospitalService.AddHospitalAsync(hospital));
+        })
+        .WithName("AddHospital");
+
         userGroup.MapGet("/get-un-confirmed-doctors",
         async (HttpContext httpContext, IDoctorService doctorService) =>
         {
-            return Results.Ok(await doctorService.GetAllUnConfirmedDoctors());
+            return Results.Ok(await doctorService.GetAllUnConfirmedDoctorsAsync());
         })
         .WithName("GetUnConfirmedDoctors");
 

@@ -7,7 +7,7 @@ namespace Application.Services;
 
 public class DoctorService(IDoctorRepository _doctorRepo) : IDoctorService
 {
-    public async Task<ICollection<UnConfirmedDoctorGetDto>> GetAllUnConfirmedDoctors()
+    public async Task<ICollection<UnConfirmedDoctorGetDto>> GetAllUnConfirmedDoctorsAsync()
     {
         var doctors  = await _doctorRepo.GetAllUnConfirmedDoctorsAsync();
         return doctors.Select(Converter).ToList();

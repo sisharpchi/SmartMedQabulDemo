@@ -5,5 +5,5 @@ namespace Application.Abstractions.Services;
 
 public interface IDoctorService
 {
-    Task<ICollection<UnConfirmedDoctorGetDto>> GetAllUnConfirmedDoctors();
+    Task<ICollection<UnConfirmedDoctorGetDto>> GetAllUnConfirmedDoctorsAsync();
 }
