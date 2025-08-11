@@ -10,10 +10,10 @@ public class PatientConfiguration : IEntityTypeConfiguration<Patient>
     {
         builder.HasKey(p => p.Id);
 
-        builder.Property(p => p.Gender).HasMaxLength(50);
+        builder.Property(p => p.Gender).HasMaxLength(50).IsRequired(false);
 
         builder.HasOne(p => p.User)
-               .WithOne()
+               .WithOne(x=>x.Patient)
                .HasForeignKey<Patient>(p => p.UserId);
     }
 }

@@ -10,15 +10,15 @@ public class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
     {
         builder.HasKey(d => d.Id);
 
-        builder.Property(d => d.Specialty).IsRequired().HasMaxLength(100);
-        builder.Property(d => d.Description).IsRequired().HasMaxLength(1000);
-        builder.Property(d => d.Experience).HasMaxLength(500);
+        builder.Property(d => d.Specialty).IsRequired(false).HasMaxLength(100);
+        builder.Property(d => d.Description).IsRequired(false).HasMaxLength(1000);
+        builder.Property(d => d.Experience).HasMaxLength(500).IsRequired(false);
 
-        builder.Property(d => d.WorkStartTime).IsRequired();
-        builder.Property(d => d.WorkEndTime).IsRequired();
+        builder.Property(d => d.WorkStartTime).IsRequired(false);
+        builder.Property(d => d.WorkEndTime).IsRequired(false);
 
         builder.HasOne(d => d.User)
-               .WithOne()
+               .WithOne(x=>x.Doctor)
                .HasForeignKey<Doctor>(d => d.UserId);
 
         builder.HasOne(d => d.Hospital)
