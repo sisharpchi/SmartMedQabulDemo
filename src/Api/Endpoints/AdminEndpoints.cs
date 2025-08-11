@@ -11,6 +11,7 @@ public static class AdminEndpoints
     public static void MapAdminEndpoints(this WebApplication app)
     {
         var userGroup = app.MapGroup("/api/admin")
+                   .RequireAuthorization()
                    .WithTags("AdminManagement");
 
         userGroup.MapPost("/add-hospital", [Authorize(Roles = "Admin, SuperAdmin")]

@@ -37,7 +37,7 @@ public class DoctorRepository(AppDbContext _context) : IDoctorRepository
 
     public async Task<ICollection<Doctor>> GetAllDoctorsAsync()
     {
-        return await _context.Doctors.ToListAsync();
+        return await _context.Doctors.Include(x=>x.User).Include(x=>x.Hospital).ToListAsync();
     }
 
     public async Task<ICollection<Doctor>> GetAllDoctorsByHospitalIdAsync(long hospitalId)

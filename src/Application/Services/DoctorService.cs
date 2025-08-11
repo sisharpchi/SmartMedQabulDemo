@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Dtos;
-using Domain.Entities;
+using Application.Mappers;
 
 namespace Application.Services;
 
@@ -9,37 +9,18 @@ public class DoctorService(IDoctorRepository _doctorRepo) : IDoctorService
 {
     public async Task ConfirmDoctorAsync(long doctorId, long hospitalId)
     {
-        await _doctorRepo.ConfirmDoctorAsync(doctorId,hospitalId);
+        await _doctorRepo.ConfirmDoctorAsync(doctorId, hospitalId);
+    }
+
+    public async Task<ICollection<DoctorGetDto>> GetAllDoctorsAsync()
+    {
+        var doctors = await _doctorRepo.GetAllDoctorsAsync();
+        return doctors.Select(MapperService.GetAllDoctorsConverter).ToList();
     }
 
     public async Task<ICollection<UnConfirmedDoctorGetDto>> GetAllUnConfirmedDoctorsAsync()
     {
-        var doctors  = await _doctorRepo.GetAllUnConfirmedDoctorsAsync();
-        return doctors.Select(Converter).ToList();
+        var doctors = await _doctorRepo.GetAllUnConfirmedDoctorsAsync();
+        return doctors.Select(MapperService.Converter).ToList();
     }
-
-    private UnConfirmedDoctorGetDto Converter(Doctor doctor)
-    {
-        return new UnConfirmedDoctorGetDto
-        {
-            Id = doctor.Id,
-            IsConfirmedByAdmin = doctor.IsConfirmedByAdmin,
-            User = Converter(doctor.User)
-        };
-    }
-
-    private UserGetDto Converter(User user)
-    {
-        return new UserGetDto
-        {
-            Email = user.Confirmer!.Gmail,
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            PhoneNumber = user.PhoneNumber,
-            UserId = user.UserId,
-            UserName = user.UserName,
-            Role = user.Role.Name,
-        };
-    }
-
 }
