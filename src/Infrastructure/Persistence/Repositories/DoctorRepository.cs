@@ -32,6 +32,16 @@ public class DoctorRepository(AppDbContext _context) : IDoctorRepository
         return await _context.Doctors.Where(x => x.HospitalId == hospitalId).ToListAsync();
     }
 
+    public async Task<ICollection<Doctor>> GetAllUnConfirmedDoctorsAsync()
+    {
+        return await _context.Doctors
+            .Include(x=>x.User)
+            .ThenInclude(x=>x.Confirmer)
+            .Include(x=>x.User).ThenInclude(x=>x.Role)
+            .Where(x => x.IsConfirmedByAdmin == false && x.User!.Confirmer!.IsConfirmed == true)
+            .ToListAsync();
+    }
+
     public async Task<Doctor> GetDoctorByIdAsync(long id)
     {
         var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.Id == id);

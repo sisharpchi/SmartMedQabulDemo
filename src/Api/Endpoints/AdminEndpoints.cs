@@ -12,8 +12,12 @@ public static class AdminEndpoints
         var userGroup = app.MapGroup("/api/admin")
                    .WithTags("AdminManagement");
 
-        
-
+        userGroup.MapGet("/get-un-confirmed-doctors",
+        async (HttpContext httpContext, IDoctorService doctorService) =>
+        {
+            return Results.Ok(await doctorService.GetAllUnConfirmedDoctors());
+        })
+        .WithName("GetUnConfirmedDoctors");
 
         userGroup.MapDelete("/delete{userId}", [Authorize(Roles = "Admin, SuperAdmin")]
         async (long userId, HttpContext httpContext, IUserService userService) =>

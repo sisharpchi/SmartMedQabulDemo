@@ -14,6 +14,7 @@ public static class DependecyInjectionsConfiguration
     public static void ConfigureDependecies(this IServiceCollection services)
     {
         services.AddScoped<IDoctorRepository, DoctorRepository>();
+        services.AddScoped<IDoctorService, DoctorService>();
         services.AddScoped<IPatientRepository, PatientRepository>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRoleService, RoleService>();
