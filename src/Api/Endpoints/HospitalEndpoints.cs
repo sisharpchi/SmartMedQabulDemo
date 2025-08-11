@@ -8,6 +8,7 @@ public static class HospitalEndpoints
     public static void MapHospitalEndpoints(this WebApplication app)
     {
         var userGroup = app.MapGroup("/api/hospital")
+                   .RequireAuthorization()
                    .WithTags("HospitalManagement");
 
         userGroup.MapPost("/get-all",

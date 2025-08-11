@@ -61,6 +61,7 @@ namespace Api
             app.MapRoleEndpoints();
             app.MapAdminEndpoints();
             app.MapHospitalEndpoints();
+            app.MapDoctorEndpoints();
 
             app.MapControllers();
 
