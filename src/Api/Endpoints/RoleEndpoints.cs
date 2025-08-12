@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Endpoints;
 

@@ -1,4 +1,7 @@
-﻿using Application.Abstractions.Repositories;
+﻿using System.Net;
+using System.Net.Mail;
+using System.Security.Claims;
+using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Dtos;
 using Application.Helpers;
@@ -9,15 +12,11 @@ using Domain.Entities;
 using FluentEmail.Core;
 using FluentEmail.Smtp;
 using FluentValidation;
-using System.Net;
-using System.Net.Mail;
-using System.Security.Claims;
 
 namespace Application.Services;
 
-public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doctorRepo,IRoleRepository _roleRepo, IValidator<UserCreateDto> _validator,
-    IUserRepository _userRepo, ITokenService _tokenService,
-    JwtAppSettings _jwtSetting, IValidator<UserLoginDto> _validatorForLogin,
+public class AuthService(IPatientRepository _patientRepo, IDoctorRepository _doctorRepo, IRoleRepository _roleRepo, IValidator<UserCreateDto> _validator,
+    IUserRepository _userRepo, ITokenService _tokenService, IValidator<UserLoginDto> _validatorForLogin,
     IRefreshTokenRepository _refTokRepo) : IAuthService
 {
 
@@ -31,7 +30,7 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
             throw new AuthException(errorMessages);
         }
 
-        var roleId = 0l;
+        long roleId;
 
         if (userCreateDto.RoleName == "Doctor")
         {
@@ -42,7 +41,7 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
             roleId = await _roleRepo.GetRoleIdAsync("User");
         }
 
-        var isEmailExists = await _userRepo.GetUserByEmail(userCreateDto.Email);
+        var isEmailExists = await _userRepo.GetUserByEmailAsync(userCreateDto.Email);
 
         if (isEmailExists == null)
         {
@@ -69,13 +68,18 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
 
             var foundUser = await _userRepo.GetUserByIdAync(userId);
 
-            if(userCreateDto.RoleName == "Doctor")
+            if (userCreateDto.RoleName == "Doctor")
             {
                 var doctor = new Doctor()
                 {
                     UserId = userId,
                     IsConfirmedByAdmin = false,
                 };
+                var patient = new Patient()
+                {
+                    UserId = userId,
+                };
+                await _patientRepo.AddPatientAsync(patient);
                 await _doctorRepo.AddDoctorAsync(doctor);
             }
             else
@@ -88,9 +92,9 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
             }
 
 
-                foundUser.Confirmer!.UserId = userId;
+            foundUser.Confirmer!.UserId = userId;
 
-            await _userRepo.UpdateUser(foundUser);
+            await _userRepo.UpdateUserAsync(foundUser);
 
             return userId;
         }
@@ -114,6 +118,11 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
                     UserId = isEmailExists.UserId,
                     IsConfirmedByAdmin = false,
                 };
+                var patient = new Patient()
+                {
+                    UserId = isEmailExists.UserId,
+                };
+                await _patientRepo.AddPatientAsync(patient);
                 await _doctorRepo.AddDoctorAsync(doctor);
             }
             else
@@ -124,7 +133,7 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
                 };
                 await _patientRepo.AddPatientAsync(patient);
             }
-            await _userRepo.UpdateUser(isEmailExists);
+            await _userRepo.UpdateUserAsync(isEmailExists);
             return isEmailExists.UserId;
         }
         throw new NotAllowedException("This email already confirmed");
@@ -207,7 +216,7 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
 
 
         var userClaim = principal.FindFirst(c => c.Type == "UserId");
-        var userId = long.Parse(userClaim.Value);
+        var userId = long.Parse(userClaim!.Value);
 
 
         var refreshToken = await _refTokRepo.SelectRefreshToken(request.RefreshToken, userId);
@@ -224,7 +233,7 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
             UserName = user.UserName,
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Email = user.Confirmer.Gmail,
+            Email = user.Confirmer!.Gmail,
             PhoneNumber = user.PhoneNumber,
             Role = user.Role.Name,
         };
@@ -255,7 +264,7 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
 
     public async Task EailCodeSender(string email)
     {
-        var user = await _userRepo.GetUserByEmail(email);
+        var user = await _userRepo.GetUserByEmailAsync(email);
 
         var sender = new SmtpSender(() => new SmtpClient("smtp.gmail.com")
         {
@@ -278,19 +287,19 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
 
         user.Confirmer!.ConfirmingCode = code;
         user.Confirmer.ExpiredDate = DateTime.UtcNow.AddHours(5).AddMinutes(10);
-        await _userRepo.UpdateUser(user);
+        await _userRepo.UpdateUserAsync(user);
     }
 
     public async Task<bool> ConfirmCode(string userCode, string email)
     {
-        var user = await _userRepo.GetUserByEmail(email);
+        var user = await _userRepo.GetUserByEmailAsync(email);
         var code = user.Confirmer!.ConfirmingCode;
         if (code == null || code != userCode || user.Confirmer.ExpiredDate < DateTime.Now || user.Confirmer.IsConfirmed is true)
         {
             throw new NotAllowedException("Code is incorrect");
         }
         user.Confirmer.IsConfirmed = true;
-        await _userRepo.UpdateUser(user);
+        await _userRepo.UpdateUserAsync(user);
         return true;
     }
 }

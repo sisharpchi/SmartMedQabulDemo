@@ -13,6 +13,7 @@ public static class DependecyInjectionsConfiguration
 {
     public static void ConfigureDependecies(this IServiceCollection services)
     {
+        services.AddScoped<IPatientService, PatientService>();
         services.AddScoped<IHospitalRepository, HospitalRepository>();
         services.AddScoped<IHospitalService, HospitalService>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
