@@ -12,7 +12,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
     {
         var user =await _userRepository.GetUserByIdAync(userId);
         user.BanTime = date;
-        await _userRepository.UpdateUser(user);
+        await _userRepository.UpdateUserAsync(user);
     }
 
     public async Task DeleteUserByIdAsync(long userId, string userRole)
@@ -39,6 +39,18 @@ public class UserService(IUserRepository _userRepository) : IUserService
     {
         var users = await _userRepository.GetUsersByRoleAsync(roleName);
         return users.Select(MapperService.Converter).ToList();
+    }
+
+    public async Task UpdateUserAsync(UserUpdateDto user,long userId)
+    {
+        var userEntity = await _userRepository.GetUserByIdAync(userId);
+        userEntity.Address = user.Address;
+        userEntity.UserName = user.UserName;
+        userEntity.PhoneNumber = user.PhoneNumber;
+        userEntity.Bio = user.Bio;
+        userEntity.FirstName = user.FirstName;
+        userEntity.LastName = user.LastName;
+        await _userRepository.UpdateUserAsync(userEntity);
     }
 
     public async Task UpdateUserRoleAsync(long userId, string userRole) => await _userRepository.UpdateUserRoleAsync(userId, userRole);

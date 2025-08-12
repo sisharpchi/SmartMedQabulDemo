@@ -5,16 +5,16 @@ namespace Application.Abstractions.Repositories;
 public interface IUserRepository
 {
     Task<long> AddUserAync(User user);
-    Task AddConfirmer(UserConfirmer confirmer);
+    Task AddConfirmerAsync(UserConfirmer confirmer);
     Task<User> GetUserByIdAync(long id);
     Task<ICollection<User>> GetUsersByRoleAsync(string roleName);
-    Task UpdateUser(User user);
-    Task<User> GetUserByEmail(string email);
+    Task UpdateUserAsync(User user);
+    Task<User> GetUserByEmailAsync(string email);
     Task<User> GetUserByUserNameAync(string userName);
     Task UpdateUserRoleAsync(long userId, string userRole);
     Task DeleteUserByIdAsync(long userId);
-    Task<bool> CheckUserById(long userId);
-    Task<bool> CheckUsernameExists(string username);
+    Task<bool> CheckUserByIdAsync(long userId);
+    Task<bool> CheckUsernameExistsAsync(string username);
     Task<long?> CheckEmailExistsAsync(string email);
-    Task<bool> CheckPhoneNumberExists(string phoneNum);
+    Task<bool> CheckPhoneNumberExistsAsync(string phoneNum);
 }

@@ -9,6 +9,6 @@ public interface IDoctorService
     Task ConfirmDoctorAsync(long doctorId, long hospitalId);
     Task<ICollection<DoctorGetDto>> GetAllDoctorsAsync();
     Task<DoctorGetDto> GetDoctorByIdAsync(long id);
-    //Task UpdateDoctorAsync(Doctor doctor);
+    Task UpdateDoctorAsync(DoctorUpdateDto doctor,long doctorId);
     Task<ICollection<DoctorGetDto>> GetAllDoctorsByHospitalIdAsync(long hospitalId);
 }

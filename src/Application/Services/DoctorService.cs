@@ -33,4 +33,15 @@ public class DoctorService(IDoctorRepository _doctorRepo) : IDoctorService
     {
         return MapperService.GetDoctorConverter(await _doctorRepo.GetDoctorByIdAsync(id));
     }
+
+    public async Task UpdateDoctorAsync(DoctorUpdateDto doctor, long doctorId)
+    {
+        var doctorEntity = await _doctorRepo.GetDoctorByIdAsync(doctorId);
+        doctorEntity.Experience = doctor.Experience;
+        doctor.Specialty = doctor.Specialty;
+        doctor.WorkStartTime = doctor.WorkStartTime;
+        doctor.WorkEndTime = doctor.WorkEndTime;
+        doctor.Description = doctor.Description;
+        await _doctorRepo.UpdateDoctorAsync(doctorEntity);
+    }
 }

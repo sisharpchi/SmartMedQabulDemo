@@ -24,14 +24,14 @@ public class UserRepository(AppDbContext _context) : IUserRepository
         return role == null ? new List<User>() : role.Users;
     }
 
-    public async Task<User> GetUserByEmail(string email)
+    public async Task<User> GetUserByEmailAsync(string email)
     {
         return await _context.Users.Include(_ => _.Confirmer).FirstOrDefaultAsync(x => x.Confirmer.Gmail == email);
     }
 
-    public Task<bool> CheckUserById(long userId) => _context.Users.AnyAsync(x => x.UserId == userId);
+    public Task<bool> CheckUserByIdAsync(long userId) => _context.Users.AnyAsync(x => x.UserId == userId);
 
-    public Task<bool> CheckUsernameExists(string username) => _context.Users.AnyAsync(_ => _.UserName == username);
+    public Task<bool> CheckUsernameExistsAsync(string username) => _context.Users.AnyAsync(_ => _.UserName == username);
 
     public async Task<long?> CheckEmailExistsAsync(string email)
     {
@@ -43,7 +43,7 @@ public class UserRepository(AppDbContext _context) : IUserRepository
         return user.UserId;
     }
 
-    public Task<bool> CheckPhoneNumberExists(string phoneNum) => _context.Users.AnyAsync(_ => _.PhoneNumber == phoneNum);
+    public Task<bool> CheckPhoneNumberExistsAsync(string phoneNum) => _context.Users.AnyAsync(_ => _.PhoneNumber == phoneNum);
 
     public async Task DeleteUserByIdAsync(long userId)
     {
@@ -72,13 +72,13 @@ public class UserRepository(AppDbContext _context) : IUserRepository
         return user;
     }
 
-    public async Task AddConfirmer(UserConfirmer confirmer)
+    public async Task AddConfirmerAsync(UserConfirmer confirmer)
     {
         await _context.UserConfirmers.AddAsync(confirmer);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateUser(User user)
+    public async Task UpdateUserAsync(User user)
     {
         _context.Users.Update(user);
         await _context.SaveChangesAsync();

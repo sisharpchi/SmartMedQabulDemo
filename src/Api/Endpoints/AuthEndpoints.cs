@@ -53,8 +53,8 @@ public static class AuthEndpoints
         .WithName("SignUp");
 
         userGroup.MapPost("/login",
-     async (UserLoginDto user, IAuthService _service) =>
-     {
+        async (UserLoginDto user, IAuthService _service) =>
+        {
          var result = await _service.LoginUserAsync(user);
 
          var response = new ApiResponse<LoginResponseDto>
@@ -64,8 +64,8 @@ public static class AuthEndpoints
          };
 
          return Results.Ok(response);
-     })
- .WithName("Login");
+         })
+        .WithName("Login");
 
 
         userGroup.MapPut("/refresh-token",
