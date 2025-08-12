@@ -62,6 +62,7 @@ public class Program
         app.MapHospitalEndpoints();
         app.MapDoctorEndpoints();
         app.MapProfileEndpoints();
+        app.MapPatientEndpoints();
 
         app.MapControllers();
 

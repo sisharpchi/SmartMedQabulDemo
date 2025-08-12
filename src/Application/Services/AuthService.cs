@@ -6,7 +6,6 @@ using Application.Abstractions.Services;
 using Application.Dtos;
 using Application.Helpers;
 using Application.Helpers.Security;
-using Application.Settings;
 using Core.Errors;
 using Domain.Entities;
 using FluentEmail.Core;

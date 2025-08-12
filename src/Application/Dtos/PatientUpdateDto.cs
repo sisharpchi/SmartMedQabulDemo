@@ -3,5 +3,5 @@
 public class PatientUpdateDto
 {
     public string? Gender { get; set; }
-    public DateTime? DateOfBirth { get; set; }
+    public DateOnly? DateOfBirth { get; set; }
 }

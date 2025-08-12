@@ -5,6 +5,7 @@ namespace Application.Abstractions.Repositories;
 public interface IPatientRepository
 {
     Task<long> AddPatientAsync(Patient patient);
-    Task<Patient> GetPatientByIdAsync(long patientId);
+    Task<Patient> GetPatientByUserIdAsync(long userId);
+    Task<ICollection<Patient>> GetAllPatientsAsync();
     Task UpdatePatientAsync(Patient patient);
 }
