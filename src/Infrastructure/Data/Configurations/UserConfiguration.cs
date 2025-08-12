@@ -19,6 +19,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Salt).IsRequired();
         builder.Property(u => u.PhoneNumber).HasMaxLength(20);
         builder.Property(u => u.ConfirmerId).IsRequired(false);
+        builder.Property(u => u.BanTime).IsRequired(false);
         builder.Property(u => u.Address).HasMaxLength(250);
         builder.Property(u => u.Bio).HasMaxLength(500);
 

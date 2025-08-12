@@ -36,7 +36,7 @@ public static class AuthEndpoints
 
 
 
-        userGroup.MapPost("/confirm-code",
+        userGroup.MapPut("/confirm-code",
         async (ConfirmCodeRequest request, IAuthService _service) =>
         {
             var res = await _service.ConfirmCode(request.Code, request.Email);

@@ -158,6 +158,10 @@ public class AuthService(IPatientRepository _patientRepo,IDoctorRepository _doct
         {
             throw new UnauthorizedException("Email not confirmed");
         }
+        if (user.BanTime is not null && user.BanTime > DateTime.UtcNow)
+        {
+            throw new NotAllowedException($"You are banned since {user.BanTime}");
+        }
 
         var userGetDto = new UserGetDto()
         {

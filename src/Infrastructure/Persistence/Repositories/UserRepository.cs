@@ -15,6 +15,15 @@ public class UserRepository(AppDbContext _context) : IUserRepository
         return user.UserId;
     }
 
+    public async Task<ICollection<User>> GetUsersByRoleAsync(string roleName)
+    {
+        var role = await _context.UserRoles
+            .Include(x=>x.Users)
+            .ThenInclude(x=>x.Confirmer)
+            .FirstOrDefaultAsync(x=>x.Name == roleName);
+        return role == null ? new List<User>() : role.Users;
+    }
+
     public async Task<User> GetUserByEmail(string email)
     {
         return await _context.Users.Include(_ => _.Confirmer).FirstOrDefaultAsync(x => x.Confirmer.Gmail == email);
@@ -26,7 +35,7 @@ public class UserRepository(AppDbContext _context) : IUserRepository
 
     public async Task<long?> CheckEmailExistsAsync(string email)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(_ => _.Confirmer.Gmail == email);
+        var user = await _context.Users.FirstOrDefaultAsync(_ => _.Confirmer!.Gmail == email);
         if (user is null)
         {
             return null;
