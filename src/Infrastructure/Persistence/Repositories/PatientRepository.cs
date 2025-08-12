@@ -15,12 +15,17 @@ public class PatientRepository(AppDbContext _context) : IPatientRepository
         return patient.Id;
     }
 
-    public async Task<Patient> GetPatientByIdAsync(long patientId)
+    public async Task<ICollection<Patient>> GetAllPatientsAsync()
     {
-        var patient = await _context.Patients.FirstOrDefaultAsync(x=>x.Id == patientId);
-        if(patient == null)
+        return await _context.Patients.ToListAsync();
+    }
+
+    public async Task<Patient> GetPatientByUserIdAsync(long userId)
+    {
+        var patient = await _context.Patients.FirstOrDefaultAsync(x => x.UserId == userId);
+        if (patient == null)
         {
-            throw new EntityNotFoundException($"Patient not found with id {patientId}");
+            throw new EntityNotFoundException($"Patient not found with user id {userId}");
         }
         return patient;
     }

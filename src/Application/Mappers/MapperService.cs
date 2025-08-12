@@ -29,6 +29,16 @@ public static class MapperService
             BanDate = user.BanTime,
         };
     }
+    public static PatientGetDto Converter(Patient patiend)
+    {
+        return new PatientGetDto
+        {
+            DateOfBirth = patiend.DateOfBirth,
+            Gender = patiend.Gender,
+            Id = patiend.Id,
+            UserId = patiend.UserId,
+        };
+    }
     public static UserDto UserDtoConverter(User user)
     {
         return new UserDto
