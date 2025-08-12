@@ -28,13 +28,6 @@ public class DoctorRepository(AppDbContext _context) : IDoctorRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteDoctorAsync(long id)
-    {
-        var doctor = await GetDoctorByIdAsync(id);
-        _context.Doctors.Remove(doctor);
-        await _context.SaveChangesAsync();
-    }
-
     public async Task<ICollection<Doctor>> GetAllDoctorsAsync()
     {
         return await _context.Doctors.Include(x=>x.User).Include(x=>x.Hospital).ToListAsync();
@@ -42,7 +35,7 @@ public class DoctorRepository(AppDbContext _context) : IDoctorRepository
 
     public async Task<ICollection<Doctor>> GetAllDoctorsByHospitalIdAsync(long hospitalId)
     {
-        return await _context.Doctors.Where(x => x.HospitalId == hospitalId).ToListAsync();
+        return await _context.Doctors.Include(x=>x.User).Include(x=>x.Hospital).Where(x => x.HospitalId == hospitalId).ToListAsync();
     }
 
     public async Task<ICollection<Doctor>> GetAllUnConfirmedDoctorsAsync()
@@ -57,7 +50,7 @@ public class DoctorRepository(AppDbContext _context) : IDoctorRepository
 
     public async Task<Doctor> GetDoctorByIdAsync(long id)
     {
-        var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.Id == id);
+        var doctor = await _context.Doctors.Include(x=>x.User).Include(x=>x.Hospital).FirstOrDefaultAsync(x => x.Id == id);
         if (doctor == null)
         {
             throw new EntityNotFoundException($"Doctor not found with id {id}");

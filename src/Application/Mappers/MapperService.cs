@@ -26,6 +26,7 @@ public static class MapperService
             UserId = user.UserId,
             UserName = user.UserName,
             Role = user.Role.Name,
+            BanDate = user.BanTime,
         };
     }
     public static UserDto UserDtoConverter(User user)
@@ -36,9 +37,10 @@ public static class MapperService
             LastName = user.LastName,
             PhoneNumber = user.PhoneNumber,
             UserName = user.UserName,
+            BanDate = user.BanTime
         };
     }
-    public static DoctorGetDto GetAllDoctorsConverter(Doctor doctor)
+    public static DoctorGetDto GetDoctorConverter(Doctor doctor)
     {
         return new DoctorGetDto
         {

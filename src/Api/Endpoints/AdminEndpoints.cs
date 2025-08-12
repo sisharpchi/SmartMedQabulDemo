@@ -8,11 +8,13 @@ namespace Api.Endpoints;
 
 public static class AdminEndpoints
 {
+    private record BanUser(long userId,DateTime date);
     public static void MapAdminEndpoints(this WebApplication app)
     {
         var userGroup = app.MapGroup("/api/admin")
                    .RequireAuthorization()
                    .WithTags("AdminManagement");
+
 
         userGroup.MapPost("/add-hospital", [Authorize(Roles = "Admin, SuperAdmin")]
         async (HospitalCreateDto hospital,IHospitalService hospitalService) =>
@@ -21,7 +23,15 @@ public static class AdminEndpoints
         })
         .WithName("AddHospital");
 
-        userGroup.MapPost("/confirm-doctor", [Authorize(Roles = "Admin, SuperAdmin")]
+        userGroup.MapPatch("/ban-user", [Authorize(Roles = "Admin, SuperAdmin")]
+        async (BanUser informations,IUserService userService) =>
+        {
+            await userService.BanUserAsync(informations.userId,informations.date);
+            return Results.Ok();
+        })
+        .WithName("BanUser");
+
+        userGroup.MapPatch("/confirm-doctor", [Authorize(Roles = "Admin, SuperAdmin")]
         async (long doctorId,long hospitalId,IDoctorService doctorService) =>
         {
             await doctorService.ConfirmDoctorAsync(doctorId,hospitalId);
@@ -29,23 +39,21 @@ public static class AdminEndpoints
         })
         .WithName("ConfirmDoctor");
 
-        userGroup.MapGet("/get-un-confirmed-doctors",
+        userGroup.MapGet("/get-un-confirmed-doctors", [Authorize(Roles = "Admin, SuperAdmin")]
         async (HttpContext httpContext, IDoctorService doctorService) =>
         {
             return Results.Ok(await doctorService.GetAllUnConfirmedDoctorsAsync());
         })
         .WithName("GetUnConfirmedDoctors");
 
-        userGroup.MapDelete("/delete{userId}", [Authorize(Roles = "Admin, SuperAdmin")]
-        async (long userId, HttpContext httpContext, IUserService userService) =>
+        userGroup.MapGet("/get-users{roleName}", [Authorize(Roles = "Admin, SuperAdmin")]
+        async (string roleName, IUserService userService) =>
         {
-            var role = httpContext.User.FindFirst(ClaimTypes.Role)?.Value;
-            await userService.DeleteUserByIdAsync(userId, role);
-            return Results.Ok();
+            return Results.Ok(await userService.GetUsersByRoleAsync(roleName));
         })
-        .WithName("DeleteUser");
+        .WithName("GetUsersByRole");
 
-        userGroup.MapPatch("/update-role", [Authorize(Roles = "SuperAdmin")]
+        userGroup.MapPatch("/update-role", [Authorize(Roles = "Admin,SuperAdmin")]
         async (long userId, string userRole, IUserService userService) =>
         {
             await userService.UpdateUserRoleAsync(userId, userRole);

@@ -15,6 +15,7 @@ public class User
 
     public string? ProfileImageUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? BanTime { get; set; }
 
     public long RoleId { get; set; }
     public UserRole Role { get; set; }
