@@ -3,14 +3,15 @@ using Application.Abstractions.Services;
 using Application.Dtos;
 using Application.Mappers;
 using Core.Errors;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Services;
 
-public class UserService(IUserRepository _userRepository) : IUserService
+public class UserService(IUserRepository _userRepository, ICloudService _cloudService) : IUserService
 {
     public async Task BanUserAsync(long userId, DateTime date)
     {
-        var user =await _userRepository.GetUserByIdAync(userId);
+        var user = await _userRepository.GetUserByIdAync(userId);
         user.BanTime = date;
         await _userRepository.UpdateUserAsync(user);
     }
@@ -41,7 +42,7 @@ public class UserService(IUserRepository _userRepository) : IUserService
         return users.Select(MapperService.Converter).ToList();
     }
 
-    public async Task UpdateUserAsync(UserUpdateDto user,long userId)
+    public async Task UpdateUserAsync(UserUpdateDto user, long userId)
     {
         var userEntity = await _userRepository.GetUserByIdAync(userId);
         userEntity.Address = user.Address;
@@ -51,6 +52,13 @@ public class UserService(IUserRepository _userRepository) : IUserService
         userEntity.FirstName = user.FirstName;
         userEntity.LastName = user.LastName;
         await _userRepository.UpdateUserAsync(userEntity);
+    }
+
+    public async Task UpdateUserProfileUrlAsync(IFormFile img, long userId)
+    {
+        var user = await _userRepository.GetUserByIdAync(userId);
+        user.ProfileImageUrl = await _cloudService.UploadProfileImageAsync(img);
+        await _userRepository.UpdateUserAsync(user);
     }
 
     public async Task UpdateUserRoleAsync(long userId, string userRole) => await _userRepository.UpdateUserRoleAsync(userId, userRole);

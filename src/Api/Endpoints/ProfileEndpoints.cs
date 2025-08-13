@@ -1,16 +1,33 @@
 ﻿using Application.Abstractions.Services;
 using Application.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Endpoints;
 
 public static class ProfileEndpoints
 {
+    private record FormFile(IFormFile file);
     public static void MapProfileEndpoints(this WebApplication app)
     {
         var userGroup = app.MapGroup("/api/profile")
             .RequireAuthorization()
             .WithTags("ProfileManagement");
+
+        userGroup.MapPut("/update-profile-img",
+        async ([FromForm]string? text,IFormFile file,IUserService userService,HttpContext context) =>
+        {
+            var userId = context.User.FindFirst("UserId")?.Value;
+            if (userId == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            await userService.UpdateUserProfileUrlAsync(file,long.Parse(userId));
+            return Results.Ok();
+        })
+        .WithName("UpdateUserProfileImg")
+        .DisableAntiforgery();
+
 
         userGroup.MapPut("/update-user",
         async (UserUpdateDto user,IUserService userService,HttpContext context) =>
