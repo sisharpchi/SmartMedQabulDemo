@@ -4,6 +4,7 @@ using Application.Dtos;
 using Application.Helpers;
 using Application.Services;
 using Application.Validators;
+using CloudinaryDotNet;
 using FluentValidation;
 using Infrastructure.Persistence.Repositories;
 
@@ -14,6 +15,7 @@ public static class DependecyInjectionsConfiguration
     public static void ConfigureDependecies(this IServiceCollection services)
     {
         services.AddScoped<IPatientService, PatientService>();
+        services.AddScoped<ICloudService, CloudinaryService>();
         services.AddScoped<IHospitalRepository, HospitalRepository>();
         services.AddScoped<IHospitalService, HospitalService>();
         services.AddScoped<IDoctorRepository, DoctorRepository>();
@@ -28,5 +30,6 @@ public static class DependecyInjectionsConfiguration
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IValidator<UserCreateDto>, UserCreateDtoValidator>();
         services.AddScoped<IValidator<UserLoginDto>, UserLoginDtoValidator>();
+        services.AddSingleton<Cloudinary>();
     }
 }

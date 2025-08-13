@@ -27,6 +27,7 @@ public static class MapperService
             UserName = user.UserName,
             Role = user.Role.Name,
             BanDate = user.BanTime,
+            ProfilUrl = user.ProfileImageUrl
         };
     }
     public static PatientGetDto Converter(Patient patiend)
@@ -47,7 +48,8 @@ public static class MapperService
             LastName = user.LastName,
             PhoneNumber = user.PhoneNumber,
             UserName = user.UserName,
-            BanDate = user.BanTime
+            BanDate = user.BanTime,
+            ProfilUrl = user.ProfileImageUrl
         };
     }
     public static DoctorGetDto GetDoctorConverter(Doctor doctor)
